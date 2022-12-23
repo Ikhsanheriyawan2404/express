@@ -4,7 +4,7 @@ const path = require('path')
 const fs = require('fs')
 
 exports.createBlogPost = (req, res, next) => {
-
+  
     const errors = validationResult(req)
 
     if (!errors.isEmpty()) {
@@ -49,11 +49,26 @@ exports.createBlogPost = (req, res, next) => {
 }
 
 exports.findAll = (req, res, next) => {
+
+    const currentPage = req.query.page || 1
+    const perPage = req.query.perPage || 5
+    let totalItems
+
     BlogPost.find()
+        .countDocuments()
+        .then(count => {
+            totalItems = count
+            return BlogPost.find()
+                .skip((parseInt(currentPage) - 1) * parseInt(perPage))
+                .limit(parseInt(perPage))
+        })
         .then(result => {
             res.status(200).json({
                 message: 'List blogs',
-                data: result
+                data: result,
+                total_data: totalItems,
+                per_page: perPage,
+                current_page: currentPage,
             })
         })
         .catch(err => {

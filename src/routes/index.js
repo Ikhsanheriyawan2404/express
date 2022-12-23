@@ -10,11 +10,11 @@ router.use((error, req, res, next) => {
     res.status(status).json({message: message, data: data})
 })
 
+router.get('/blogs', blogController.findAll);
 router.post('/blogs', [
     body('title').isLength({min: 5}).withMessage('title is required'),
     body('body').isLength({min: 5}).withMessage('body is required')
 ], blogController.createBlogPost);
-router.get('/blogs', blogController.findAll);
 router.get('/blogs/:blogId', blogController.findById);
 router.put('/blogs/:blogId',  [
     body('title').isLength({min: 5}).withMessage('title is required'),
